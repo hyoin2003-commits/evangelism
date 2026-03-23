@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마음의 풍경</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+      overflow-x: hidden;
+      background: #0f172a;
+      color: white;
+    }
+
+    body {
+      position: relative;
+    }
+
+    .page {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      transition: background 1.2s ease;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.16), transparent 20%),
+        radial-gradient(circle at 80% 25%, rgba(255,255,255,0.10), transparent 18%),
+        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.08), transparent 22%),
+        linear-gradient(160deg, #0f172a 0%, #172554 50%, #1e293b 100%);
+      transition: all 1.2s ease;
+    }
+
+    .bg::before,
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: -10%;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      opacity: 0.45;
+      filter: blur(18px);
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    .bg::before {
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.24) 0, rgba(255,255,255,0) 52%),
+        radial-gradient(circle, rgba(255,255,255,0.14) 0, rgba(255,255,255,0) 58%);
+      background-size: 34rem 34rem, 28rem 28rem;
+      background-position: 10% 20%, 85% 15%;
+    }
+
+    .bg::after {
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.12) 0, rgba(255,255,255,0) 55%),
+        radial-gradient(circle, rgba(255,255,255,0.10) 0, rgba(255,255,255,0) 50%);
+      background-size: 32rem 32rem, 22rem 22rem;
+      background-position: 75% 70%, 20% 85%;
+      animation-duration: 24s;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.55);
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 60px;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.28);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 30px;
+    }
+
+    .intro {
+      width: 100%;
+      padding: 36px;
+      animation: riseIn 1s ease both;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.16);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.82);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      line-height: 1.18;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin-top: 18px;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.9;
+      color: rgba(255,255,255,0.86);
+      max-width: 760px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 34px;
+    }
+
+    .card {
+      position: relative;
+      padding: 28px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.10);
+      color: white;
+      cursor: pointer;
+      transition: transform .35s ease, box-shadow .35s ease, background .35s ease;
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 24px 50px rgba(0,0,0,0.26);
+      background: rgba(255,255,255,0.14);
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: auto -10% -30% auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+      filter: blur(10px);
+    }
+
+    .emoji {
+      font-size: 42px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      line-height: 1.8;
+      color: rgba(255,255,255,0.82);
+      font-size: 1rem;
+    }
+
+    .view {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .view.active {
+      display: flex;
+      animation: fadeIn 0.9s ease;
+    }
+
+    .panel-wrap {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 22px;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .panel {
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scene-label {
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 16px;
+    }
+
+    .scene-title {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .scene-copy {
+      margin-top: 20px;
+      font-size: 1.07rem;
+      line-height: 1.95;
+      color: rgba(255,255,255,0.90);
+    }
+
+    .quote {
+      margin-top: 26px;
+      padding: 20px 22px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.12);
+      line-height: 1.9;
+      font-size: 1.02rem;
+    }
+
+    .quote small {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255,255,255,0.62);
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      margin-top: 26px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .25s ease, opacity .25s ease, background .25s ease;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn.primary {
+      background: rgba(255,255,255,0.95);
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,0.10);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .side-box {
+      padding: 26px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 18px;
+    }
+
+    .side-box h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.15rem;
+    }
+
+    .side-box p, .side-box li {
+      color: rgba(255,255,255,0.84);
+      line-height: 1.85;
+    }
+
+    .side-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .gospel-view {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .gospel-view.active {
+      display: flex;
+      animation: fadeIn 0.9s ease;
+    }
+
+    .gospel-card {
+      width: 100%;
+      padding: 38px;
+    }
+
+    .gospel-title {
+      margin: 10px 0 0 0;
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+
+    .gospel-copy {
+      margin-top: 18px;
+      line-height: 1.95;
+      color: rgba(255,255,255,0.92);
+      font-size: 1.06rem;
+    }
+
+    .twocol {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .small-title {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 10px;
+    }
+
+    .back-top {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+      display: none;
+    }
+
+    .back-top.show {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .mountain-theme .bg {
+      background:
+        radial-gradient(circle at 22% 22%, rgba(255,255,255,0.14), transparent 22%),
+        radial-gradient(circle at 82% 24%, rgba(255,255,255,0.12), transparent 18%),
+        linear-gradient(160deg, #0f172a 0%, #334155 38%, #7c5d2e 74%, #d9b36c 100%);
+    }
+
+    .sea-theme .bg {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.12), transparent 24%),
+        radial-gradient(circle at 78% 28%, rgba(255,255,255,0.10), transparent 18%),
+        linear-gradient(160deg, #082f49 0%, #0f172a 40%, #0e7490 72%, #7dd3fc 100%);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      text-align: center;
+      color: rgba(255,255,255,0.58);
+      font-size: 0.92rem;
+    }
+
+    @keyframes drift {
+      from { transform: translate3d(-1%, -1%, 0) scale(1); }
+      to { transform: translate3d(2%, 2%, 0) scale(1.05); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.7); }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .choices, .panel-wrap, .twocol {
+        grid-template-columns: 1fr;
+      }
+      .intro, .panel, .gospel-card {
+        padding: 24px;
+      }
+      .hero, .view.active, .gospel-view.active {
+        min-height: auto;
+        padding-top: 90px;
+        padding-bottom: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page" id="page">
+    <div class="bg"></div>
+    <div class="stars" id="stars"></div>
+
+    <button class="btn secondary back-top" id="homeBtn" onclick="goHome()">처음으로</button>
+
+    <section class="hero container" id="homeView">
+      <div class="intro glass">
+        <div class="eyebrow">INTERACTIVE GOSPEL PAGE</div>
+        <h1>당신의 마음은 지금<br>어디에 더 가까운가요?</h1>
+        <p class="subtitle">
+          이 페이지는 전도를 위한 감성형 짧은 여정이에요.
+          정답을 고르는 것이 아니라, 지금의 마음과 가장 가까운 풍경을 선택해 보세요.
+          풍경 뒤에 숨어 있는 복음의 문장이 이어집니다.
+        </p>
+
+        <div class="choices">
+          <div class="card" onclick="openScene('mountain')">
+            <span class="emoji">⛰️</span>
+            <div class="card-title">산</div>
+            <div class="card-desc">
+              버티고 있는 마음, 무너지지 않으려는 마음,
+              더 높이 오르고 싶지만 조용히 지쳐 있는 마음
+            </div>
+          </div>
+
+          <div class="card" onclick="openScene('sea')">
+            <span class="emoji">🌊</span>
+            <div class="card-title">바다</div>
+            <div class="card-desc">
+              깊고 흔들리는 마음, 설명되지 않는 외로움,
+              겉으론 괜찮아 보여도 안에서는 파도가 이는 마음
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-note">산이나 바다를 클릭하면 다음 장면으로 넘어갑니다.</div>
+      </div>
+    </section>
+
+    <section class="view container" id="sceneView">
+      <div class="panel-wrap">
+        <div class="panel glass">
+          <div class="scene-label" id="sceneLabel"></div>
+          <h2 class="scene-title" id="sceneTitle"></h2>
+          <div class="scene-copy" id="sceneCopy"></div>
+          <div class="quote" id="sceneQuote"></div>
+          <div class="actions">
+            <button class="btn primary" onclick="showGospel()">다음 메시지 보기</button>
+            <button class="btn secondary" onclick="copyMessage()">문구 복사</button>
+          </div>
+        </div>
+
+        <div class="panel glass">
+          <div class="side-box">
+            <h3>이 페이지가 전도용으로 좋은 이유</h3>
+            <ul>
+              <li>먼저 마음을 묻고, 그 다음에 복음을 전할 수 있어요.</li>
+              <li>상대가 선택하니까 부담이 덜하고 자연스러워요.</li>
+              <li>풍경과 감정, 복음 메시지가 한 흐름으로 이어져요.</li>
+            </ul>
+          </div>
+
+          <div class="side-box">
+            <h3>친구에게 보낼 때 시작 문장</h3>
+            <p>“이거 그냥 테스트처럼 만든 건데, 지금 네 마음이 어디에 가까운지 골라볼래?”</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="gospel-view container" id="gospelView">
+      <div class="gospel-card glass">
+        <div class="eyebrow">GOSPEL MESSAGE</div>
+        <h2 class="gospel-title">예수님은 지금의 당신에게도 오십니다</h2>
+        <div class="gospel-copy" id="gospelCopy"></div>
+
+        <div class="twocol">
+          <div class="side-box">
+            <div class="small-title">짧은 기도</div>
+            <p id="prayerCopy"></p>
+          </div>
+          <div class="side-box">
+            <div class="small-title">나눔 질문</div>
+            <p id="questionCopy"></p>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary" onclick="backToScene()">이전으로</button>
+          <button class="btn primary" onclick="goHome()">다른 마음 선택하기</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const scenes = {
+      mountain: {
+        theme: "mountain-theme",
+        label: "SCENE · MOUNTAIN",
+        title: "버티고 있는 마음,\n높이 오르고 싶은 마음",
+        copy: "어떤 날은 잘 버티고 있는 것처럼 보여도, 안에서는 조용히 지쳐 있을 수 있어요. 계속 올라가야 할 것 같고, 무너지면 안 될 것 같고, 멈추면 뒤처질 것 같은 마음이 있죠. 하지만 하나님은 당신이 얼마나 애써 왔는지 이미 알고 계십니다.",
+        quote: "“내가 산을 향하여 눈을 들리라. 나의 도움이 어디서 올까.”<small>시편 121:1</small>",
+        gospel: "예수님은 강한 사람만 부르신 것이 아니라, 수고하고 무거운 짐 진 사람을 부르셨어요. 하나님께 나아가는 길은 더 완벽해지는 길이 아니라, 있는 그대로 은혜 앞에 서는 길입니다. 버티기만 하던 마음도 예수님 안에서 쉼을 배울 수 있어요.",
+        prayer: "하나님, 제 힘으로만 버티지 않게 해주세요. 지친 제 마음을 아시는 주님께 나아갑니다. 예수님 안에서 참된 쉼을 알게 해주세요.",
+        question: "나는 요즘 무엇을 붙들며 버티고 있나요?\n내가 기대는 힘은 내 자신인가요, 아니면 하나님인가요?"
+      },
+      sea: {
+        theme: "sea-theme",
+        label: "SCENE · SEA",
+        title: "깊고 흔들리는 마음,\n설명되지 않는 외로움",
+        copy: "바다는 아름답지만, 동시에 깊고 흔들립니다. 겉으로는 잔잔해 보여도 안쪽에서는 계속 파도가 움직일 수 있어요. 사람들 사이에 있어도 외롭고, 이유를 설명하기 어려운데 마음이 자꾸 가라앉는 날이 있습니다. 하나님은 그 깊이까지 모르시는 분이 아니에요.",
+        quote: "“깊은 바다보다 더 깊은 사랑이 있습니다.”<small>복음 메시지</small>",
+        gospel: "예수님은 폭풍 속에서도 사람들을 버려두지 않으셨어요. 혼란과 두려움의 한가운데에 있는 사람들에게 가까이 오셨습니다. 당신의 흔들림이 끝난 뒤에만 오시는 분이 아니라, 흔들리는 그 순간에도 함께 계시는 분입니다.",
+        prayer: "하나님, 흔들리는 제 마음을 아시는 주님께 나아갑니다. 깊은 곳까지 만지시는 예수님의 평안으로 저를 채워주세요.",
+        question: "나는 요즘 무엇 때문에 흔들리고 있나요?\n사람들에게 말하지 못한 외로움을 하나님 앞에는 솔직히 놓을 수 있나요?"
+      }
+    };
+
+    let currentScene = null;
+
+    function createStars() {
+      const stars = document.getElementById("stars");
+      for (let i = 0; i < 55; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+        star.style.left = Math.random() * 100 + "%";
+        star.style.top = Math.random() * 100 + "%";
+        star.style.animationDelay = (Math.random() * 4) + "s";
+        star.style.animationDuration = (3 + Math.random() * 3) + "s";
+        star.style.opacity = 0.25 + Math.random() * 0.7;
+        stars.appendChild(star);
+      }
+    }
+
+    function openScene(name) {
+      currentScene = scenes[name];
+      const page = document.getElementById("page");
+      page.classList.remove("mountain-theme", "sea-theme");
+      page.classList.add(currentScene.theme);
+
+      document.getElementById("homeView").style.display = "none";
+      document.getElementById("gospelView").classList.remove("active");
+      document.getElementById("sceneView").classList.add("active");
+      document.getElementById("homeBtn").classList.add("show");
+
+      document.getElementById("sceneLabel").textContent = currentScene.label;
+      document.getElementById("sceneTitle").innerHTML = currentScene.title.replace(/\n/g, "<br>");
+      document.getElementById("sceneCopy").textContent = currentScene.copy;
+      document.getElementById("sceneQuote").innerHTML = currentScene.quote;
+    }
+
+    function showGospel() {
+      if (!currentScene) return;
+      document.getElementById("sceneView").classList.remove("active");
+      document.getElementById("gospelView").classList.add("active");
+      document.getElementById("gospelCopy").textContent = currentScene.gospel;
+      document.getElementById("prayerCopy").textContent = currentScene.prayer;
+      document.getElementById("questionCopy").innerHTML = currentScene.question.replace(/\n/g, "<br>");
+    }
+
+    function backToScene() {
+      document.getElementById("gospelView").classList.remove("active");
+      document.getElementById("sceneView").classList.add("active");
+    }
+
+    function goHome() {
+      currentScene = null;
+      const page = document.getElementById("page");
+      page.classList.remove("mountain-theme", "sea-theme");
+      document.getElementById("sceneView").classList.remove("active");
+      document.getElementById("gospelView").classList.remove("active");
+      document.getElementById("homeView").style.display = "flex";
+      document.getElementById("homeBtn").classList.remove("show");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function copyMessage() {
+      if (!currentScene) return;
+      const text = [
+        "당신의 마음은 지금 어디에 더 가까운가요?",
+        "",
+        currentScene.title.replace(/\n/g, " "),
+        "",
+        currentScene.copy,
+        "",
+        currentScene.gospel
+      ].join("\n");
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert("문구를 복사했어요.");
+      }).catch(() => {
+        alert("복사는 실패했지만, 다시 시도해볼 수 있어요.");
+      });
+    }
+
+    createStars();
+  </script>
+</body>
+</html>
